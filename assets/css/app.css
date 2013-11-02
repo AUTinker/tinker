@@ -1,15 +1,18 @@
-.land {
-    fill: #BBB;
+.state-path {
+    fill: #FFF;
+    stroke: #000;
+    stroke-width: 1px;
 }
 
-/* .land:hover { */
-/*     fill: orange; */
-/* } */
+.county-path {
+    fill: #BBB;
+    stroke: #333;
+    opacity: .7;
+    stroke-width: .25px;
+}
 
-.county-boundary {
-    fill: none;
-    stroke: #fff;
-    stroke-width: .5px;
+.county-path:hover {
+    fill: orange
 }
 
 .state-boundary {
