@@ -1,17 +1,17 @@
-var trend = function(conf) {
+var Trend = function(conf) {
     this.conf = conf;
 };
 
-trend.prototype.bind_handlers = function() {
+Trend.prototype.bind_handlers = function() {
 };
 
-trend.prototype.init = function() {
+Trend.prototype.init = function() {
     this.bind_handlers();
     console.log(this.mock_data());
     this.graph_states();
 };
 
-trend.prototype.graph_states = function () {
+Trend.prototype.graph_states = function () {
     var self = this;
     nv.addGraph(function() {
         var chart = nv.models.stackedAreaChart()
@@ -28,7 +28,7 @@ trend.prototype.graph_states = function () {
     });
 }
 
-trend.prototype.mock_data = function() {
+Trend.prototype.mock_data = function() {
     var list = [];
     var states = ['AL', 'CA', 'GA', 'NY'];
     var years = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013];
@@ -45,11 +45,11 @@ trend.prototype.mock_data = function() {
 };
 
 
-$(window).load(function() {
+function trend() {
     var conf = {};
     conf.div_id_graph = 'trend_graph';
     conf.div_id_root = 'trend';
-    trend = new trend(conf);
-    trend.init();
-    console.log(trend);
-});
+    t = new Trend(conf);
+    t.init();
+    console.log(t);
+}
