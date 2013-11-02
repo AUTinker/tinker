@@ -4,7 +4,7 @@
         hl = pathname[pathname.length-2];
         if '/' == hl
              hl = '/';
-        $('a[href="/' + hl + '"]').parent().attr('class', 'active');
+        $('a[href="/' + hl + '"]').parent().attr('class', 'active')
         return
     return
 )(jQuery, window)
