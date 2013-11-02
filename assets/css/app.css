@@ -6,3 +6,26 @@
 #trend svg {
     height: 640px;
 }
+
+.land {
+    fill: #BBB;
+}
+
+/* .land:hover { */
+/*     fill: orange; */
+/* } */
+
+.county-boundary {
+    fill: none;
+    stroke: #fff;
+    stroke-width: .5px;
+}
+
+.state-boundary {
+    fill: none;
+    stroke: #fff;
+}
+
+#canvas svg {
+    border: #aaa 1px solid
+}
