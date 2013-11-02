@@ -2,17 +2,20 @@
 var usamap;
 
 usamap = function() {
-  var countyMapPath, countyMapSvg, countyMapZoom, redrawCountyMap, states;
-  countyMapZoom = d3.behavior.zoom().scaleExtent([.7, 4]).on('zoom', redrawCountyMap);
-  countyMapSvg = d3.select('#canvas').append('svg').call(countyMapZoom).append('g');
-  states = countyMapSvg.append('g').attr('id', 'states');
-  countyMapPath = d3.geo.path();
-  d3.json('/assets/data/us-states.json', function(json) {
-    states.selectAll('path').data(json.features).enter().append('path').attr('d', countyMapPath);
+  var HEIGHT, WIDTH, path, projection, svg;
+  WIDTH = 960;
+  HEIGHT = 460;
+  projection = d3.geo.albersUsa().scale(1000).translate([WIDTH / 2, HEIGHT / 2]);
+  path = d3.geo.path().projection(projection);
+  svg = d3.select('#canvas').append('svg').attr('width', WIDTH).attr('height', HEIGHT);
+  d3.json('assets/data/us.json', function(err, us) {
+    svg.insert('path', '.graticule').datum(topojson.feature(us, us.objects.land)).attr('class', 'land').attr('d', path);
+    svg.insert('path', '.graticule').datum(topojson.mesh(us, us.objects.counties, function(a, b) {
+      return a !== b && !(a.id / 1000 ^ b.id / 1000);
+    })).attr('class', 'county-boundary').attr('d', path);
+    return svg.insert('path', '.graticule').datum(topojson.mesh(us, us.objects.states, function(a, b) {
+      return a !== b;
+    })).attr('class', 'state-boundary').attr('d', path);
   });
-  return redrawCountyMap = function() {
-    var scale;
-    countyMapSvg.attr('transform', 'translate(' + countyMapZoom.translate() + ')scale(' + countyMapZoom.scale() + ')');
-    scale = countyMapZoom.scale();
-  };
+  return d3.select(self.frameElement).style('height', HEIGHT + 'px');
 };
