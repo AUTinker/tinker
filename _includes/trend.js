@@ -3,24 +3,43 @@ var Trend = function(conf) {
 };
 
 Trend.prototype.bind_handlers = function() {
+    $('#trend_btn_states').click(this.clicked_states.bind(this));
+    $('#trend_btn_countries').click(this.clicked_countries.bind(this));
+    $('#trend_btn_ethnicities').click(this.clicked_ethnicities.bind(this));
+    $('#trend_btn_genders').click(this.clicked_genders.bind(this));
 };
 
 Trend.prototype.init = function() {
     this.bind_handlers();
-    console.log(this.mock_data());
-    this.graph_states();
+    $('#trend_btn_states a').click();
 };
 
-Trend.prototype.graph_states = function () {
+Trend.prototype.clicked_states = function() {
+    this.graph(this.mock_data());
+};
+
+Trend.prototype.clicked_countries = function() {
+    this.graph(this.mock_data());
+};
+
+Trend.prototype.clicked_ethnicities = function() {
+    this.graph(this.mock_data());
+};
+
+Trend.prototype.clicked_genders = function() {
+    this.graph(this.mock_data());
+};
+
+Trend.prototype.graph = function (data) {
     var self = this;
     nv.addGraph(function() {
         var chart = nv.models.stackedAreaChart()
             .x(function(d) { return d[0]; })
             .y(function(d) { return d[1]; })
             .clipEdge(true);
-        chart.xAxis.tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) });
-        chart.yAxis.tickFormat(d3.format(',.2f'));
-        d3.select('#' + self.conf.div_id_graph + ' svg').datum(self.mock_data()).transition().duration(500).call(chart);
+        chart.xAxis.tickFormat(function(d) { return d3.time.format('%Y')(new Date(d)) });
+        chart.yAxis.tickFormat(d3.format(',d'));
+        d3.select('#' + self.conf.div_id_graph + ' svg').datum(data).transition().duration(500).call(chart);
 
         nv.utils.windowResize(chart.update);
 
