@@ -1,8 +1,16 @@
+#trend {
+    margin-top: 72px;
+    width: 100%
+}
+
+#trend svg {
+    height: 640px;
+}
+
 .state-path {
     fill: #FFF;
     stroke: #000;
     stroke-width: 1px;
-}
 
 .county-path {
     fill: #BBB;
