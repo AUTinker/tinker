@@ -32,7 +32,7 @@ Trend.prototype.clicked_countries = function() {
 
 Trend.prototype.clicked_ethnicities = function() {
     var self = this;
-    self.get_data('/query/index.php?r=ethnicities', function(data) {
+    self.get_data('/query/index.php?r=eth', function(data) {
         $('#' + self.conf.div_id_graph).height('720px');
         self.graph(data);
     });
