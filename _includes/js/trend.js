@@ -16,14 +16,16 @@ Trend.prototype.init = function() {
 
 Trend.prototype.clicked_states = function() {
     var self = this;
-    self.get_data('/query/index.php?r=states', function(data) {
+    self.get_data('/states_total.json', function(data) {
+        $('#' + self.conf.div_id_graph).height('720px');
         self.graph(data);
     });
 };
 
 Trend.prototype.clicked_countries = function() {
     var self = this;
-    self.get_data('/query/index.php?r=countries', function(data) {
+    self.get_data('/countries_total.json', function(data) {
+        $('#' + self.conf.div_id_graph).height('1200px');
         self.graph(data);
     });
 };
@@ -31,13 +33,15 @@ Trend.prototype.clicked_countries = function() {
 Trend.prototype.clicked_ethnicities = function() {
     var self = this;
     self.get_data('/query/index.php?r=ethnicities', function(data) {
+        $('#' + self.conf.div_id_graph).height('720px');
         self.graph(data);
     });
 };
 
 Trend.prototype.clicked_genders = function() {
     var self = this;
-    self.get_data('/query/index.php?r=genders', function(data) {
+    self.get_data('/genders_total.json', function(data) {
+        $('#' + self.conf.div_id_graph).height('720px');
         self.graph(data);
     });
 };
