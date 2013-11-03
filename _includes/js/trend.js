@@ -61,7 +61,15 @@ Trend.prototype.graph = function (data) {
         chart.yAxis.tickFormat(d3.format(',d'));
         d3.select('#' + self.conf.div_id_graph + ' svg').datum(data).transition().duration(500).call(chart);
 
-        nv.utils.windowResize(chart.update);
+        current = $('#' + self.conf.div_id_graph).height();
+        check = function() {
+            if (current !== $('#' + self.conf.div_id_graph).height()) {
+                current = $('#' + self.conf.div_id_graph).height();
+                chart.update();
+            }
+            setTimeout(check, 1000)
+        };
+        check()
 
         return chart;
     });
