@@ -34,38 +34,6 @@ worldmap = function() {
 
     var isredraw = false;
 
-    // $.ajax({
-    //     type: 'GET',
-    //     url: '/query/index.php?r=states/yearrange',
-    //     dataType: 'json'
-    // }).done(function (json) {
-
-    //     slider = $('.slider').slider({
-    //         value: json.min,
-    //         min: json.min,
-    //         max: json.max
-    //     }).on('slideStop', sliderStop).data('slider');
-    //     yearmin.text(json.min);
-    //     yearmax.text(json.max);
-    //     yearcur.text(json.min);
-
-    //     $.ajax({
-    //         type: 'GET',
-    //         url: '/query/index.php?r=states',
-    //         data: {
-    //             gender: 'total',
-    //             year: slider.value[0]
-    //         },
-    //         dataType: 'json'
-    //     }).done(function (json) {
-    //         isredraw = true;
-    //         var fmt = {};
-    //         for (var i = 0; i < json.length; ++i)
-    //             fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
-    //         redraw(fmt);
-    //     });
-    // });
-
     $.ajax({
         type: 'GET',
         url: '/query/index.php?r=states/' + 'total',
@@ -114,6 +82,16 @@ worldmap = function() {
     function redraw(json) {
         json = typeof json !== 'undefined' ? json : false;
 
+        var scaleval = [];
+        if (json) {
+            var sum = 0, state;
+            for (state in json)
+                sum += json[state];
+
+            for (state in json)
+                scaleval.push({ state: json[state]*scale/sum });
+        }
+
         if (worldLayer) map.removeLayer(worldLayer);
         if (stateLayer) map.removeLayer(stateLayer);
         if (infoCtrl) map.removeControl(infoCtrl);
@@ -128,19 +106,11 @@ worldmap = function() {
         infoCtrl.update = function (props) {
             this._div.innerHTML = '<h4>Data Density</h4>' +
                 (props ? '<b>' + props.name + '</b><br />' +
-                 (json ? json[props.name] :
+                 (json ? scaleval[props.name] :
                   props.hasOwnProperty('density') ? props.density : 'unavailable') + ' &permil;'
                  : ('Hover over a ' + (map.getZoom() > 3 ? 'state' : 'country')));
         };
         map.addControl(infoCtrl);
-
-        var scaleval = [];
-        var sum = 0, state;
-        for (state in json)
-            sum += json[state];
-
-        for (state in json)
-            scaleval.push({ state: json[state]*scale/sum });
 
         // get color depending on density value
         function getColor(d) {
@@ -161,7 +131,7 @@ worldmap = function() {
                 color: 'white',
                 dashArray: '3',
                 fillOpacity: 0.7,
-                fillColor: getColor(json ? json[feature.properties.name] :
+                fillColor: getColor(json ? scaleval[feature.properties.name] :
                                     (feature.properties.hasOwnProperty('density') ?
                                      feature.properties.density : 'unavailable' ))
             };
