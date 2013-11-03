@@ -13,15 +13,10 @@ usamap = ->
         .scale(width * scale)
         .translate([width / 2, height / 2])
 
-    zoom = d3.behavior.zoom()
-        .scaleExtent([.7, 4])
-        .on('zoom', redraw)
-
     svg = d3.select('#canvas')
         .append('svg')
         .attr('width', size[0])
         .attr('height', size[1])
-        # .call(zoom)
         .append('g')
 
     path = d3.geo.path()
@@ -48,9 +43,3 @@ usamap = ->
             .attr('class', 'countypath')
             .attr('d', path)
     )
-
-    redraw = ->
-        svg.attr('transform', 'translate(' +
-            zoom.translate() + ')scale(' +
-            zoom.scale() + ')')
-        scale = zoom.scale()

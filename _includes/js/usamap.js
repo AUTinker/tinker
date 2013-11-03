@@ -2,7 +2,7 @@
 var usamap;
 
 usamap = function() {
-  var counties, height, margin, path, projection, redraw, scale, size, states, svg, width, zoom;
+  var counties, height, margin, path, projection, scale, size, states, svg, width;
   size = [960, 460];
   margin = {
     top: -100,
@@ -14,7 +14,6 @@ usamap = function() {
   height = size[1] - margin.top - margin.bottom;
   scale = .7;
   projection = d3.geo.mercator().scale(width * scale).translate([width / 2, height / 2]);
-  zoom = d3.behavior.zoom().scaleExtent([.7, 4]).on('zoom', redraw);
   svg = d3.select('#canvas').append('svg').attr('width', size[0]).attr('height', size[1]).append('g');
   path = d3.geo.path();
   states = svg.append('g').attr('id', 'states');
@@ -24,13 +23,9 @@ usamap = function() {
       return d.properties.name;
     }).attr('class', 'statepath').attr('d', path);
   });
-  d3.json('/assets/data/us-counties.json', function(json) {
+  return d3.json('/assets/data/us-counties.json', function(json) {
     return counties.selectAll('path').data(json.features).enter().append('path').attr('id', function(d) {
       return d.properties.NAME;
     }).attr('class', 'countypath').attr('d', path);
   });
-  return redraw = function() {
-    svg.attr('transform', 'translate(' + zoom.translate() + ')scale(' + zoom.scale() + ')');
-    return scale = zoom.scale();
-  };
 };
