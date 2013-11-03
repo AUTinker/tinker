@@ -160,10 +160,10 @@ worldmap = function() {
 
             info.update(layer.feature.properties);
         }
-        var geojson;
+        var statejson;
 
         function resetHighlight(e) {
-            geojson.resetStyle(e.target);
+            statejson.resetStyle(e.target);
             info.update();
         }
 
@@ -179,11 +179,11 @@ worldmap = function() {
             });
         }
 
-        geojson = L.geoJson(statesData, {
+        statejson = L.geoJson(statesData, {
             style: style,
             onEachFeature: onEachFeature
         }).addTo(map);
-        layers.push(geojson);
+        layers.push(statejson);
 
         map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
         map.attributionControl.addAttribution('Sutdent data &copy; <a href="http://auburn.edu/">Auburn University</a>');
