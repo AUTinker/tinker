@@ -161,6 +161,7 @@ worldmap = function() {
             info.update(layer.feature.properties);
         }
         var statejson;
+        var worldjson;
 
         function resetHighlight(e) {
             statejson.resetStyle(e.target);
@@ -184,6 +185,27 @@ worldmap = function() {
             onEachFeature: onEachFeature
         }).addTo(map);
         layers.push(statejson);
+
+        worldjson = L.geoJson(countriesData, {
+            style: style,
+            onEachFeature: onEachFeature
+        });
+
+        function zoomEnd(e) {
+            zoom = map.getZoom();
+            if (zoom <= 3) {
+                map.removeLayer(statejson);
+                layers.pop();
+                worldjson.addTo(map);
+            }
+            if (zoom > 3) {
+                map.removeLayer(worldjson);
+                layers.pop();
+                statejson.addTo(map);
+            }
+        };
+
+        map.on({zoomend: zoomEnd});
 
         map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
         map.attributionControl.addAttribution('Sutdent data &copy; <a href="http://auburn.edu/">Auburn University</a>');
