@@ -23,7 +23,7 @@ worldmap = function() {
         yearcur.text(slider.value[0]);
         $.ajax({
             type: 'GET',
-            url: '/query/index.php?r=' + (map.getZoom() >= 3 ? 'states ' : 'countries')
+            url: '/query/index.php?r=' + (map.getZoom() > 3 ? 'states ' : 'countries')
                 + '/' + $('#worldmap label.active>input').attr('id'),
             data: {
                 year: slider.value[0]
@@ -67,7 +67,7 @@ worldmap = function() {
     $('#worldmap input[type=radio]').change(function () {
         $.ajax({
             type: 'GET',
-            url: '/query/index.php?r=' + (map.getZoom() >= 3 ? 'states/' : 'countries/') + this.id,
+            url: '/query/index.php?r=' + (map.getZoom() > 3 ? 'states/' : 'countries/') + this.id,
             data: {
                 year: slider.value[0]
             },
@@ -193,6 +193,21 @@ worldmap = function() {
                 map.removeLayer(worldLayer);
                 stateLayer.addTo(map);
             }
+
+            $.ajax({
+                type: 'GET',
+                url: '/query/index.php?r=' + (map.getZoom() > 3 ? 'states/' : 'countries/') + this.id,
+                data: {
+                    year: slider.value[0]
+                },
+                dataType: 'json'
+            }).done(function (json) {
+                var fmt = {};
+                for (var i = 0; i < json.length; ++i)
+                    fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
+                redraw(fmt);
+            });
+
             infoCtrl.update();
         };
 
