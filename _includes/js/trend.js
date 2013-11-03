@@ -56,6 +56,7 @@ Trend.prototype.get_data = function(uri, callback) {
 
 Trend.prototype.graph = function (data) {
     var self = this;
+    $('#' + self.conf.div_id_graph + ' svg').empty();
     nv.addGraph(function() {
         var chart = nv.models.stackedAreaChart()
             .x(function(d) { return new Date(d[0], 6, 1, 1, 1, 1, 1).getTime(); })
