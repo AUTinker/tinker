@@ -2,20 +2,30 @@
 var usamap;
 
 usamap = function() {
-  var HEIGHT, WIDTH, path, projection, svg;
-  WIDTH = 960;
-  HEIGHT = 460;
-  projection = d3.geo.albersUsa().scale(1000).translate([WIDTH / 2, HEIGHT / 2]);
-  path = d3.geo.path().projection(projection);
-  svg = d3.select('#canvas').append('svg').attr('width', WIDTH).attr('height', HEIGHT);
-  d3.json('assets/data/us.json', function(err, us) {
-    svg.insert('path', '.graticule').datum(topojson.feature(us, us.objects.land)).attr('class', 'land').attr('d', path);
-    svg.insert('path', '.graticule').datum(topojson.mesh(us, us.objects.counties, function(a, b) {
-      return a !== b && !(a.id / 1000 ^ b.id / 1000);
-    })).attr('class', 'county-boundary').attr('d', path);
-    return svg.insert('path', '.graticule').datum(topojson.mesh(us, us.objects.states, function(a, b) {
-      return a !== b;
-    })).attr('class', 'state-boundary').attr('d', path);
+  var counties, height, margin, path, projection, scale, size, states, svg, width;
+  size = [960, 460];
+  margin = {
+    top: -100,
+    right: 0,
+    bottom: 0,
+    left: 0
+  };
+  width = size[0] - margin.left - margin.right;
+  height = size[1] - margin.top - margin.bottom;
+  scale = .7;
+  projection = d3.geo.mercator().scale(width * scale).translate([width / 2, height / 2]);
+  svg = d3.select('#canvas').append('svg').attr('width', size[0]).attr('height', size[1]).append('g');
+  path = d3.geo.path();
+  states = svg.append('g').attr('id', 'states');
+  counties = svg.append('g').attr('id', 'counties');
+  d3.json('/assets/data/us-states.json', function(json) {
+    return states.selectAll('path').data(json.features).enter().append('path').attr('id', function(d) {
+      return d.properties.name;
+    }).attr('class', 'state-path').attr('d', path);
   });
-  return d3.select(self.frameElement).style('height', HEIGHT + 'px');
+  return d3.json('/assets/data/us-counties.json', function(json) {
+    return counties.selectAll('path').data(json.features).enter().append('path').attr('id', function(d) {
+      return d.properties.FIP;
+    }).attr('class', 'county-path').attr('d', path);
+  });
 };
