@@ -3,10 +3,10 @@ var worldmap;
 
 worldmap = function() {
 
-    var slider = $('.slider').slider({
-        value: 0,
-        min: 0,
-        max: 20
+    slider = $('.slider').slider({
+        value: 1996,
+        min: 1996,
+        max: 2004
     }).on('slideStop', sliderStop).data('slider');
 
     var yearmin = $('#yearmin');
@@ -17,9 +17,8 @@ worldmap = function() {
         yearcur.text(slider.value[0]);
         $.ajax({
             type: 'GET',
-            url: '/query/index.php?r=states',
+            url: '/query/index.php?r=states/' + $('#worldmap label.active>input').attr('id'),
             data: {
-                gender: $('#worldmap label.active>input').attr('id'),
                 year: slider.value[0]
             },
             dataType: 'json'
@@ -35,36 +34,51 @@ worldmap = function() {
 
     var isredraw = false;
 
+    // $.ajax({
+    //     type: 'GET',
+    //     url: '/query/index.php?r=states/yearrange',
+    //     dataType: 'json'
+    // }).done(function (json) {
+
+    //     slider = $('.slider').slider({
+    //         value: json.min,
+    //         min: json.min,
+    //         max: json.max
+    //     }).on('slideStop', sliderStop).data('slider');
+    //     yearmin.text(json.min);
+    //     yearmax.text(json.max);
+    //     yearcur.text(json.min);
+
+    //     $.ajax({
+    //         type: 'GET',
+    //         url: '/query/index.php?r=states',
+    //         data: {
+    //             gender: 'total',
+    //             year: slider.value[0]
+    //         },
+    //         dataType: 'json'
+    //     }).done(function (json) {
+    //         isredraw = true;
+    //         var fmt = {};
+    //         for (var i = 0; i < json.length; ++i)
+    //             fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
+    //         redraw(fmt);
+    //     });
+    // });
+
     $.ajax({
         type: 'GET',
-        url: '/query/index.php?r=states/yearrange',
+        url: '/query/index.php?r=states/' + 'total',
+        data: {
+            year: slider.value[0]
+        },
         dataType: 'json'
     }).done(function (json) {
-        $('.slider').empty();
-        slider = $('.slider').slider({
-            value: json.min,
-            min: json.min,
-            max: json.max
-        }).on('slideStop', sliderStop).data('slider');
-        yearmin.text(json.min);
-        yearmax.text(json.max);
-        yearcur.text(json.min);
-
-        $.ajax({
-            type: 'GET',
-            url: '/query/index.php?r=states',
-            data: {
-                gender: 'total',
-                year: slider.value[0]
-            },
-            dataType: 'json'
-        }).done(function (json) {
-            isredraw = true;
-            var fmt = {};
-            for (var i = 0; i < json.length; ++i)
-                fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
-            redraw(fmt);
-        });
+        isredraw = true;
+        var fmt = {};
+        for (var i = 0; i < json.length; ++i)
+            fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
+        redraw(fmt);
     });
 
     var map = L.map('worldmap-map').setView([37.8, -96], 4);
@@ -84,9 +98,8 @@ worldmap = function() {
     $('#worldmap input[type=radio]').change(function () {
         $.ajax({
             type: 'GET',
-            url: '/query/index.php?r=states',
+            url: '/query/index.php?r=states/' + this.id,
             data: {
-                gender: this.id,
                 year: slider.value[0]
             },
             dataType: 'json'
