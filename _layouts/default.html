@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
+    <title>{{ page.title }}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -14,9 +14,18 @@
 
     <link rel="stylesheet" href="/assets/css/normalize.css">
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+
+    <!-- These two css files conflict with each other, so load them
+    accordingly. -->
+
+    {% if page.title == 'trend' %}
     <link rel="stylesheet" href="/assets/css/nv.d3.min.css">
-    <link rel="stylesheet" href="/assets/css/tip-darkgray.css">
+    {% else if page.title == 'map' %}
+    <link rel="stylesheet" href="/assets/css/leaflet.css" />
+    {% endif %}
+
     <link rel="stylesheet" href="/assets/css/app.css">
+
     <script src="/assets/js/modernizr-2.6.2.min.js"></script>
   </head>
   <body>
@@ -37,7 +46,8 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
-            <li><a href="/doc">Document</a></li>
+            <li><a href="/trend">Trend</a></li>
+            <li><a href="/map">MapView</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/about">About</a></li>
@@ -46,15 +56,22 @@
       </div>
     </div>
 
-    {{ content }}
+    <div class="container">
+      {{ content }}
+    </div>
 
     <script src="/assets/js/jquery-1.10.2.min.js"></script>
     <script src="/assets/js/bootstrap.min.js"></script>
-    <script src="/assets/js/jquery.poshytip.min.js"></script>
-    <script src="/assets/js/d3.v3.min.js"></script>
-    <script src="/assets/js/topojson.v1.min.js"></script>
-    <script src="/assets/js/nv.d3.min.js"></script>
-    <script src="/assets/js/app.js"></script>
 
+    {% if page.title == 'trend' %}
+    <script src="/assets/js/d3.v3.min.js"></script>
+    <script src="/assets/js/nv.d3.min.js"></script>
+    {% else if page.title == 'map' %}
+    <script src="/assets/js/leaflet.js"></script>
+    <script src="/assets/js/us-states.js"></script>
+    <script src="/assets/js/leaflet-providers.js"></script>
+    {% endif %}
+
+    <script src="/assets/js/app.js"></script>
   </body>
 </html>

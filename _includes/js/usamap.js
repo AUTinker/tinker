@@ -21,11 +21,11 @@ usamap = function() {
   d3.json('/assets/data/us-states.json', function(json) {
     return states.selectAll('path').data(json.features).enter().append('path').attr('id', function(d) {
       return d.properties.name;
-    }).attr('class', 'state-path').attr('d', path);
+    }).attr('class', 'statepath').attr('d', path);
   });
   return d3.json('/assets/data/us-counties.json', function(json) {
     return counties.selectAll('path').data(json.features).enter().append('path').attr('id', function(d) {
-      return d.properties.FIP;
-    }).attr('class', 'county-path').attr('d', path);
+      return d.properties.NAME;
+    }).attr('class', 'countypath').attr('d', path);
   });
 };
