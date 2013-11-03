@@ -1,14 +1,36 @@
-<div id="worldmap" class="row">
-  <div class="btn-group pull-right" data-toggle="buttons">
-    <label class="btn btn-info">
-      <input type="radio" name="options" id="option1"> Option 1
-    </label>
-    <label class="btn btn-info">
-      <input type="radio" name="options" id="option2"> Option 2
-    </label>
-    <label class="btn btn-info">
-      <input type="radio" name="options" id="option3"> Option 3
-    </label>
+<div id="worldmap">
+  <div class="well">
+    <div class="row">
+      <div class="col-md-9">
+        <div class="row">
+          <div class="col-md-1">
+            <div class="label label-info" id="yearmin">1990</div>
+          </div>
+          <div class="col-md-4">
+            <div class="slider slider-horizontal"></div>
+          </div>
+          <div class="col-md-2">
+            <div class="label label-info" id="yearmax">2000</div>
+          </div>
+          <div class="col-md-4">
+            Current Year: <div class="label label-warning" id="yearcur">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="btn-group pull-right" data-toggle="buttons">
+          <label class="btn btn-info">
+            <input type="radio" name="options" id="male">Male
+          </label>
+          <label class="btn btn-info">
+            <input type="radio" name="options" id="female">Female
+          </label>
+          <label class="btn btn-info">
+            <input type="radio" name="options" id="total">Total
+          </label>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="worldmap-map">
   </div>
