@@ -33,11 +33,14 @@ worldmap = function() {
 
     $('#total').parent('label').addClass('active');
 
+    var isredraw = false;
+
     $.ajax({
         type: 'GET',
         url: '/query/index.php?r=states/yearrange',
         dataType: 'json'
     }).done(function (json) {
+        $('.slider').empty();
         slider = $('.slider').slider({
             value: json.min,
             min: json.min,
@@ -46,21 +49,22 @@ worldmap = function() {
         yearmin.text(json.min);
         yearmax.text(json.max);
         yearcur.text(json.min);
-    });
 
-    $.ajax({
-        type: 'GET',
-        url: '/query/index.php?r=states',
-        data: {
-            gender: 'total',
-            year: slider.value[0]
-        },
-        dataType: 'json'
-    }).done(function (json) {
-        var fmt = {};
-        for (var i = 0; i < json.length; ++i)
-            fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
-        redraw(fmt);
+        $.ajax({
+            type: 'GET',
+            url: '/query/index.php?r=states',
+            data: {
+                gender: 'total',
+                year: slider.value[0]
+            },
+            dataType: 'json'
+        }).done(function (json) {
+            isredraw = true;
+            var fmt = {};
+            for (var i = 0; i < json.length; ++i)
+                fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
+            redraw(fmt);
+        });
     });
 
     var map = L.map('worldmap-map').setView([37.8, -96], 4);
@@ -70,13 +74,12 @@ worldmap = function() {
     }).addTo(map);
 
     var scale = 1000;
-
     var stateLayer = false;
     var worldLayer = false;
     var legendCtrl = false;
     var infoCtrl = false;
 
-    redraw();
+    if (!isredraw) redraw();
 
     $('#worldmap input[type=radio]').change(function () {
         $.ajax({
@@ -112,7 +115,8 @@ worldmap = function() {
         infoCtrl.update = function (props) {
             this._div.innerHTML = '<h4>Data Density</h4>' +
                 (props ? '<b>' + props.name + '</b><br />' +
-                 (json ? json[props.name] : props.density) + ' &permil;'
+                 (json ? json[props.name] :
+                  props.hasOwnProperty('density') ? props.density : 'unavailable') + ' &permil;'
                  : ('Hover over a ' + (map.getZoom() > 3 ? 'state' : 'country')));
         };
         map.addControl(infoCtrl);
@@ -144,7 +148,9 @@ worldmap = function() {
                 color: 'white',
                 dashArray: '3',
                 fillOpacity: 0.7,
-                fillColor: getColor(json ? json[feature.properties.name] : feature.properties.density)
+                fillColor: getColor(json ? json[feature.properties.name] :
+                                    (feature.properties.hasOwnProperty('density') ?
+                                     feature.properties.density : 'unavailable' ))
             };
         }
 
