@@ -17,7 +17,7 @@ worldmap = function() {
         yearcur.text(slider.value[0]);
         $.ajax({
             type: 'GET',
-            url: 'http://tinker.song.gao.io/query/index.php?r=states',
+            url: '/query/index.php?r=states',
             data: {
                 gender: $('#worldmap label.active>input').attr('id'),
                 year: slider.value[0]
@@ -26,7 +26,7 @@ worldmap = function() {
         }).done(function (json) {
             var fmt = {};
             for (var i = 0; i < json.length; ++i)
-                fmt[json[i][key]] = json[i][values][0][1];
+                fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
             redraw(fmt);
         });
     }
@@ -35,7 +35,7 @@ worldmap = function() {
 
     $.ajax({
         type: 'GET',
-        url: 'http://tinker.song.gao.io/query/index.php?r=states/yearrange',
+        url: '/query/index.php?r=states/yearrange',
         dataType: 'json'
     }).done(function (json) {
         slider = $('.slider').slider({
@@ -50,7 +50,7 @@ worldmap = function() {
 
     $.ajax({
         type: 'GET',
-        url: 'query/index.php?r=states',
+        url: '/query/index.php?r=states',
         data: {
             gender: 'total',
             year: slider.value[0]
@@ -59,7 +59,7 @@ worldmap = function() {
     }).done(function (json) {
         var fmt = {};
         for (var i = 0; i < json.length; ++i)
-            fmt[json[i][key]] = json[i][values][0][1];
+            fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
         redraw(fmt);
     });
 
@@ -77,7 +77,7 @@ worldmap = function() {
     $('#worldmap input[type=radio]').change(function () {
         $.ajax({
             type: 'GET',
-            url: 'query/index.php?r=states',
+            url: '/query/index.php?r=states',
             data: {
                 gender: this.id,
                 year: 1990
@@ -86,7 +86,7 @@ worldmap = function() {
         }).done(function (json) {
             var fmt = {};
             for (var i = 0; i < json.length; ++i)
-                fmt[json[i][key]] = json[i][values][0][1];
+                fmt[$.trim(json[i]['key'])] = json[i]['values'][0][1];
             redraw(fmt);
         });
     });
@@ -206,7 +206,6 @@ worldmap = function() {
         };
 
         map.on({zoomend: zoomEnd});
-
         map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
         map.attributionControl.addAttribution('Sutdent data &copy; <a href="http://auburn.edu/">Auburn University</a>');
 
