@@ -9,15 +9,13 @@ usamap = ->
     height = size[1] - margin.top - margin.bottom
     scale = .7
 
-    # console.log(width, height)
-
     projection = d3.geo.mercator()
         .scale(width * scale)
         .translate([width / 2, height / 2])
 
-    # zoom = d3.behavior.zoom()
-    #     .scaleExtent([.7, 4])
-    #     .on('zoom', redraw)
+    zoom = d3.behavior.zoom()
+        .scaleExtent([.7, 4])
+        .on('zoom', redraw)
 
     svg = d3.select('#canvas')
         .append('svg')
@@ -38,7 +36,7 @@ usamap = ->
             .data(json.features)
             .enter().append('path')
             .attr('id', (d) -> d.properties.name )
-            .attr('class', 'state-path')
+            .attr('class', 'statepath')
             .attr('d', path)
     )
 
@@ -46,34 +44,13 @@ usamap = ->
         counties.selectAll('path')
             .data(json.features)
             .enter().append('path')
-            .attr('id', (d) -> d.properties.FIP )
-            .attr('class', 'county-path')
+            .attr('id', (d) -> d.properties.NAME)
+            .attr('class', 'countypath')
             .attr('d', path)
     )
 
-    # redraw = ->
-    #     svg.attr('transform', 'translate(' +
-    #         zoom.translate() + ')scale(' +
-    #         zoom.scale() + ')')
-    #     scale = zoom.scale()
-
-    # d3.json('/assets/data/us.json', (err, us) ->
-    #     svg.insert('path', '.graticule')
-    #         .datum(topojson.feature(us, us.objects.land))
-    #         .attr('class', 'land')
-    #         .attr('d', path)
-
-    #     svg.insert('path', '.graticule')
-    #         .datum(topojson.mesh(us, us.objects.counties, (a, b) ->
-    #             a != b && !(a.id / 1000 ^ b.id / 1000)
-    #         ))
-    #         .attr('class', 'county-boundary')
-    #         .attr('d', path)
-
-    #     svg.insert('path', '.graticule')
-    #         .datum(topojson.mesh(us, us.objects.states, (a, b) ->
-    #             a != b
-    #         ))
-    #         .attr('class', 'state-boundary')
-    #         .attr('d', path)
-    # )
+    redraw = ->
+        svg.attr('transform', 'translate(' +
+            zoom.translate() + ')scale(' +
+            zoom.scale() + ')')
+        scale = zoom.scale()

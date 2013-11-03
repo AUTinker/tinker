@@ -7,27 +7,23 @@
     height: 640px;
 }
 
-.state-path {
+#usamap .statepath {
     fill: #FFF;
     stroke: #000;
     stroke-width: 1px;
+}
 
-.county-path {
-    fill: #BBB;
-    stroke: #333;
-    opacity: .7;
+#usamap .countypath {
+    fill: #AAA;
+    stroke: #FFF;
+    opacity: .8;
     stroke-width: .25px;
 }
 
-.county-path:hover {
+#usamap .countypath:hover {
     fill: orange
 }
 
-.state-boundary {
-    fill: none;
-    stroke: #fff;
-}
-
-#canvas svg {
+#usamap svg {
     border: #aaa 1px solid
 }
