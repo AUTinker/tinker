@@ -69,8 +69,12 @@ worldmap = function() {
         maxZoom: 20
     }).addTo(map);
 
-    var layers = [];
     var scale = 1000;
+
+    var stateLayer = false;
+    var worldLayer = false;
+    var legendCtrl = false;
+    var infoCtrl = false;
 
     redraw();
 
@@ -80,7 +84,7 @@ worldmap = function() {
             url: '/query/index.php?r=states',
             data: {
                 gender: this.id,
-                year: 1990
+                year: slider.value[0]
             },
             dataType: 'json'
         }).done(function (json) {
@@ -92,26 +96,26 @@ worldmap = function() {
     });
 
     function redraw(json) {
-
         json = typeof json !== 'undefined' ? json : false;
 
-        for (var i = 0; i < layers.length; ++i)
-            map.removeLayer(layers[i]);
+        if (worldLayer) map.removeLayer(worldLayer);
+        if (stateLayer) map.removeLayer(stateLayer);
+        if (infoCtrl) map.removeControl(infoCtrl);
+        if (legendCtrl) map.removeControl(legendCtrl);
 
-        var info = L.control();
-        info.onAdd = function (map) {
+        infoCtrl = L.control();
+        infoCtrl.onAdd = function (map) {
             this._div = L.DomUtil.create('div', 'info');
             this.update();
             return this._div;
         };
-        info.update = function (props) {
-            this._div.innerHTML = '<h4>US Population Density</h4>' +
+        infoCtrl.update = function (props) {
+            this._div.innerHTML = '<h4>Data Density</h4>' +
                 (props ? '<b>' + props.name + '</b><br />' +
-                 props.density + ' people / mi<sup>2</sup>'
-                 : 'Hover over a state');
+                 (json ? json[props.name] : props.density) + ' &permil;'
+                 : ('Hover over a ' + (map.getZoom() > 3 ? 'state' : 'country')));
         };
-        info.addTo(map);
-        layers.push(info);
+        map.addControl(infoCtrl);
 
         var scaleval = [];
         var sum = 0, state;
@@ -158,14 +162,12 @@ worldmap = function() {
                 layer.bringToFront();
             }
 
-            info.update(layer.feature.properties);
+            infoCtrl.update(layer.feature.properties);
         }
-        var statejson;
-        var worldjson;
 
         function resetHighlight(e) {
-            statejson.resetStyle(e.target);
-            info.update();
+            stateLayer.resetStyle(e.target);
+            infoCtrl.update();
         }
 
         function zoomToFeature(e) {
@@ -180,13 +182,12 @@ worldmap = function() {
             });
         }
 
-        statejson = L.geoJson(statesData, {
+        stateLayer = L.geoJson(statesData, {
             style: style,
             onEachFeature: onEachFeature
         }).addTo(map);
-        layers.push(statejson);
 
-        worldjson = L.geoJson(countriesData, {
+        worldLayer = L.geoJson(countriesData, {
             style: style,
             onEachFeature: onEachFeature
         });
@@ -194,25 +195,22 @@ worldmap = function() {
         function zoomEnd(e) {
             zoom = map.getZoom();
             if (zoom <= 3) {
-                map.removeLayer(statejson);
-                layers.pop();
-                worldjson.addTo(map);
+                map.removeLayer(stateLayer);
+                worldLayer.addTo(map);
             }
             if (zoom > 3) {
-                map.removeLayer(worldjson);
-                layers.pop();
-                statejson.addTo(map);
+                map.removeLayer(worldLayer);
+                stateLayer.addTo(map);
             }
+            infoCtrl.update();
         };
 
         map.on({zoomend: zoomEnd});
         map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
         map.attributionControl.addAttribution('Sutdent data &copy; <a href="http://auburn.edu/">Auburn University</a>');
 
-        var legend = L.control({position: 'bottomright'});
-
-        legend.onAdd = function (map) {
-
+        legendCtrl = L.control({position: 'bottomright'});
+        legendCtrl.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend'),
                 grades = [0, 10, 20, 50, 100, 200, 500, 800, 1000],
                 labels = [],
@@ -230,9 +228,6 @@ worldmap = function() {
             div.innerHTML = labels.join('<br>');
             return div;
         };
-
-        legend.addTo(map);
-        layers.push(legend);;
+        legendCtrl.addTo(map);
     };
-
 };
