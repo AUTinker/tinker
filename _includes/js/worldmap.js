@@ -13,11 +13,18 @@ worldmap = function() {
     var yearmax = $('#yearmax');
     var yearcur = $('#yearcur');
 
+    var map = L.map('worldmap-map').setView([37.8, -96], 4);
+    var Stamen_TonerLite = L.tileLayer('http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', {
+        minZoom: 0,
+        maxZoom: 20
+    }).addTo(map);
+
     function sliderStop() {
         yearcur.text(slider.value[0]);
         $.ajax({
             type: 'GET',
-            url: '/query/index.php?r=states/' + $('#worldmap label.active>input').attr('id'),
+            url: '/query/index.php?r=' + (map.getZoom() >= 3 ? 'states ' : 'countries')
+                + '/' + $('#worldmap label.active>input').attr('id'),
             data: {
                 year: slider.value[0]
             },
@@ -36,7 +43,7 @@ worldmap = function() {
 
     $.ajax({
         type: 'GET',
-        url: '/query/index.php?r=states/' + 'total',
+        url: '/query/index.php?r=states/total',
         data: {
             year: slider.value[0]
         },
@@ -49,12 +56,6 @@ worldmap = function() {
         redraw(fmt);
     });
 
-    var map = L.map('worldmap-map').setView([37.8, -96], 4);
-    var Stamen_TonerLite = L.tileLayer('http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', {
-        minZoom: 0,
-        maxZoom: 20
-    }).addTo(map);
-
     var scale = 1000;
     var stateLayer = false;
     var worldLayer = false;
@@ -66,7 +67,7 @@ worldmap = function() {
     $('#worldmap input[type=radio]').change(function () {
         $.ajax({
             type: 'GET',
-            url: '/query/index.php?r=states/' + this.id,
+            url: '/query/index.php?r=' + (map.getZoom() >= 3 ? 'states/' : 'countries/') + this.id,
             data: {
                 year: slider.value[0]
             },
@@ -82,14 +83,15 @@ worldmap = function() {
     function redraw(json) {
         json = typeof json !== 'undefined' ? json : false;
 
-        var scaleval = [];
+        var scaleval = {};
         if (json) {
             var sum = 0, state;
             for (state in json)
                 sum += json[state];
 
-            for (state in json)
-                scaleval.push({ state: json[state]*scale/sum });
+            for (state in json) {
+                scaleval[state] = json[state] * scale / sum;
+            }
         }
 
         if (worldLayer) map.removeLayer(worldLayer);
