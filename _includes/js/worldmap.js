@@ -3,6 +3,66 @@ var worldmap;
 
 worldmap = function() {
 
+    var slider = $('.slider').slider({
+        value: 0,
+        min: 0,
+        max: 20
+    }).on('slideStop', sliderStop).data('slider');
+
+    var yearmin = $('#yearmin');
+    var yearmax = $('#yearmax');
+    var yearcur = $('#yearcur');
+
+    function sliderStop() {
+        yearcur.text(slider.value[0]);
+        $.ajax({
+            type: 'GET',
+            url: 'http://tinker.song.gao.io/query/index.php?r=states',
+            data: {
+                gender: $('#worldmap label.active>input').attr('id'),
+                year: slider.value[0]
+            },
+            dataType: 'json'
+        }).done(function (json) {
+            var fmt = {};
+            for (var i = 0; i < json.length; ++i)
+                fmt[json[i][key]] = json[i][values][0][1];
+            redraw(fmt);
+        });
+    }
+
+    $('#total').parent('label').addClass('active');
+
+    $.ajax({
+        type: 'GET',
+        url: 'http://tinker.song.gao.io/query/index.php?r=states/yearrange',
+        dataType: 'json'
+    }).done(function (json) {
+        slider = $('.slider').slider({
+            value: json.min,
+            min: json.min,
+            max: json.max
+        }).on('slideStop', sliderStop).data('slider');
+        yearmin.text(json.min);
+        yearmax.text(json.max);
+        yearcur.text(json.min);
+    });
+
+    $.ajax({
+        type: 'GET',
+        url: 'query/index.php?r=states',
+        data: {
+            gender: 'total',
+            year: slider.value[0]
+        },
+        dataType: 'json'
+    }).done(function (json) {
+        var fmt = {};
+        for (var i = 0; i < json.length; ++i)
+            fmt[json[i][key]] = json[i][values][0][1];
+        redraw(fmt);
+    });
+
     var map = L.map('worldmap-map').setView([37.8, -96], 4);
     var Stamen_TonerLite = L.tileLayer('http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', {
         minZoom: 0,
@@ -17,11 +77,17 @@ worldmap = function() {
     $('#worldmap input[type=radio]').change(function () {
         $.ajax({
             type: 'GET',
-            url: 'query/query.php',
-            data: { type: this.id },
-            dataType:'json'
+            url: 'query/index.php?r=states',
+            data: {
+                gender: this.id,
+                year: 1990
+            },
+            dataType: 'json'
         }).done(function (json) {
-            redraw(json);;
+            var fmt = {};
+            for (var i = 0; i < json.length; ++i)
+                fmt[json[i][key]] = json[i][values][0][1];
+            redraw(fmt);
         });
     });
 
@@ -77,6 +143,7 @@ worldmap = function() {
                 fillColor: getColor(json ? json[feature.properties.name] : feature.properties.density)
             };
         }
+
         function highlightFeature(e) {
             var layer = e.target;
 
