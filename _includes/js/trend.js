@@ -15,26 +15,46 @@ Trend.prototype.init = function() {
 };
 
 Trend.prototype.clicked_states = function() {
-    this.graph(this.mock_data());
+    var self = this;
+    self.get_data('/query/index.php?r=states', function(data) {
+        self.graph(data);
+    });
 };
 
 Trend.prototype.clicked_countries = function() {
-    this.graph(this.mock_data());
+    var self = this;
+    self.get_data('/query/index.php?r=countries', function(data) {
+        self.graph(data);
+    });
 };
 
 Trend.prototype.clicked_ethnicities = function() {
-    this.graph(this.mock_data());
+    var self = this;
+    self.get_data('/query/index.php?r=ethnicities', function(data) {
+        self.graph(data);
+    });
 };
 
 Trend.prototype.clicked_genders = function() {
-    this.graph(this.mock_data());
+    var self = this;
+    self.get_data('/query/index.php?r=genders', function(data) {
+        self.graph(data);
+    });
 };
+
+Trend.prototype.get_data = function(uri, callback) {
+    if (this.conf.deploy) {
+        d3.json(uri, callback);
+    } else {
+        callback(this.mock_data());
+    }
+}
 
 Trend.prototype.graph = function (data) {
     var self = this;
     nv.addGraph(function() {
         var chart = nv.models.stackedAreaChart()
-            .x(function(d) { return d[0]; })
+            .x(function(d) { return new Date(d[0], 6, 1, 1, 1, 1, 1).getTime(); })
             .y(function(d) { return d[1]; })
             .clipEdge(true);
         chart.xAxis.tickFormat(function(d) { return d3.time.format('%Y')(new Date(d)) });
@@ -49,14 +69,14 @@ Trend.prototype.graph = function (data) {
 
 Trend.prototype.mock_data = function() {
     var list = [];
-    var states = ['AL', 'CA', 'GA', 'NY'];
+    var states = ['AL', 'CA', 'GA', 'NY', 'FL'];
     var years = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013];
     for (var state_index in states) {
         var entry = {};
         entry["key"] = states[state_index];
         entry["values"] = [];
         for (var year_index in years) {
-            entry["values"].push([new Date(years[year_index], 6, 15, 1, 1, 1, 1).getTime(), 100 * Math.random()]);
+            entry["values"].push([years[year_index], 100 * Math.random()]);
         }
         list.push(entry);
     }
@@ -68,7 +88,7 @@ function trend() {
     var conf = {};
     conf.div_id_graph = 'trend_graph';
     conf.div_id_root = 'trend';
+    conf.deploy = false;
     t = new Trend(conf);
     t.init();
-    console.log(t);
 }
